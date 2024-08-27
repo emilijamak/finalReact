@@ -7,7 +7,7 @@ import mainStore from "../store/mainStore";
 const Login = () => {
 
     const nav = useNavigate()
-    const { user, token, setUser, setToken } = mainStore()
+    const { currentUser, token, setCurrentUser, setToken } = mainStore()
     const nameRef = useRef()
     const passRef = useRef()
     const [errorMessage, setErrorMessage] = useState(null);
@@ -32,7 +32,7 @@ const Login = () => {
             setErrorMessage("Please fill up the both fields.");
             return;
         }
-        console.log(user)
+
 
 
         const res = await http.post("/login", user)
@@ -42,10 +42,10 @@ const Login = () => {
             console.log(res.message)
         }
         if (!res.error) {
-            console.log(res.data)
+            console.log(res.data.updatedUser)
             nav('/');
-            setUser(res.data.updatedUser)
-            setToken(res.data.token)
+            setCurrentUser(res.data.updatedUser)
+            setToken(res.token)
 
 
         }

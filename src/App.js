@@ -6,6 +6,8 @@ import Register from "./pages/Register";
 import Homepage from "./pages/Homepage";
 import Toolbar from "./components/Toolbar";
 import Profile from "./pages/Profile";
+import SingleUserPage from "./pages/SingleUserPage";
+
 
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
                 <Route path="/" element={<Homepage/>}/>
                 <Route path="/register" element={<Register/>}/>
                 <Route path="/profile" element={<Profile/>}/>
+                <Route path="/profile/:username" element={<SingleUserPage/>}/>
             </Routes>
         </BrowserRouter>
     </div>
