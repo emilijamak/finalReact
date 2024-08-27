@@ -9,6 +9,7 @@ const SingleUserPage = () => {
     const { currentUser, setCurrentUser, token } = mainStore()
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null)
     const messageRef = useRef()
 
     useEffect(() => {
@@ -64,12 +65,17 @@ const SingleUserPage = () => {
             timestamp: formattedTimestamp
         };
 
-        console.log(data)
-        console.log(messageRef.current.value)
 
         const res = await http.postAuth("/send-message", data, token);
-        console.log(res);
+        console.log(res)
+        if (!res.error) {
+            setSuccessMessage(res.message)
+
+        } else {
+            console.log(res.message)
+        }
     }
+
 
 
     return (
@@ -99,8 +105,7 @@ const SingleUserPage = () => {
                                 className="text-white  bg-orange-500 hover:bg-orange-400 focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Send a message
                         </button>
                         {error && error}
-
-
+                        {successMessage && successMessage}
                     </div>
 
                 </div>

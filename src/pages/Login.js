@@ -45,7 +45,7 @@ const Login = () => {
             console.log(res.data.updatedUser)
             nav('/');
             setCurrentUser(res.data.updatedUser)
-            setToken(res.token)
+            setToken(res.data.token)
 
 
         }
