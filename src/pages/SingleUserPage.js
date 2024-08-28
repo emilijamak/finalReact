@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import { useParams } from 'react-router-dom'; // Import useParams to get the username from the URL
 import http from '../plugins/http';
 import mainStore from "../store/mainStore";
+import { io } from 'socket.io-client';
 
 const SingleUserPage = () => {
     const { username } = useParams(); // Get the username from the URL
@@ -30,6 +31,22 @@ const SingleUserPage = () => {
 
         fetchUser();
     }, [username]);
+
+    const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+
+        const newSocket = io('http://localhost:2000'); // Specify the backend URL
+        setSocket(newSocket);
+
+
+        newSocket.on('message', (message) => {
+            console.log(message); // Log the received message
+        });
+
+        return () => newSocket.close();
+    }, []); // Empty dependency array ensures this runs only once when the component mounts
+
 
     if (loading) {
         return <div>Loading...</div>;
@@ -70,6 +87,9 @@ const SingleUserPage = () => {
         console.log(res)
         if (!res.error) {
             setSuccessMessage(res.message)
+            //get message text
+            socket.emit('chatMessage', messageRef.current.value)
+            messageRef.current.value = ''
 
         } else {
             console.log(res.message)

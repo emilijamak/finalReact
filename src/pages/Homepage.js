@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import http from '../plugins/http';
 import {useNavigate} from "react-router-dom";
 import mainStore from "../store/mainStore"; // Assuming http is your Axios instance
-
+import { io } from 'socket.io-client';
 
 const Homepage = () => {
     const { currentUser, setCurrentUser } = mainStore()
@@ -33,6 +33,23 @@ const Homepage = () => {
 
         fetchUsers();
     }, []);
+
+
+    const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+
+        const newSocket = io('http://localhost:2000'); // Specify the backend URL
+        setSocket(newSocket);
+
+
+        newSocket.on('message', (message) => {
+            console.log(message); // Log the received message
+        });
+
+        return () => newSocket.close();
+    }, []); // Empty dependency array ensures this runs only once when the component mounts
+
 
     if (loading) {
         return <div>Loading...</div>;

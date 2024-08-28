@@ -7,6 +7,7 @@ import Homepage from "./pages/Homepage";
 import Toolbar from "./components/Toolbar";
 import Profile from "./pages/Profile";
 import SingleUserPage from "./pages/SingleUserPage";
+import Conversations from "./pages/Conversations";
 
 
 
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/register" element={<Register/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/profile/:username" element={<SingleUserPage/>}/>
+                <Route path="/allChats" element={<Conversations/>}/>
             </Routes>
         </BrowserRouter>
     </div>
