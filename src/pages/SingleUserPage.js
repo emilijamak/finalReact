@@ -5,6 +5,7 @@ import mainStore from "../store/mainStore";
 import { io } from 'socket.io-client';
 
 const SingleUserPage = () => {
+
     const { username } = useParams(); // Get the username from the URL
     const [user, setUser] = useState(null);
     const { currentUser, setCurrentUser, token } = mainStore()
@@ -12,6 +13,25 @@ const SingleUserPage = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null)
     const messageRef = useRef()
+
+
+
+    useEffect(() => {
+        const newSocket = io('http://localhost:2000');
+        setSocket(newSocket);
+
+        newSocket.on('profileUpdated', (data) => {
+            console.log("Profile updated with data: ", data);
+            setUser(data)
+            // You can perform other actions here, like updating state or UI
+        });
+
+
+        return () => newSocket.close();
+    }, []);
+
+
+
 
     useEffect(() => {
         async function fetchUser() {

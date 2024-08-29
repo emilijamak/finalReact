@@ -20,8 +20,20 @@ const Conversations = () => {
         const newSocket = io('http://localhost:2000');
         setSocket(newSocket);
 
+        newSocket.on('connect', () => {
+            console.log('Socket connected');
+        });
+
         newSocket.on('message', (message) => {
-            console.log(message);// Log the received message
+            console.log(message)
+            setMessages((prevMessages) => (prevMessages ? [...prevMessages, message] : [message]));
+
+        });
+
+        newSocket.on('likeMessage', (messages) => {
+            console.log(messages)
+            setMessages(messages)
+
         });
 
         return () => newSocket.close();
@@ -35,7 +47,6 @@ const Conversations = () => {
                     const res = await http.get(`/get-messages/${currentUser.username}/${selectedUser.username}`);
                     if (!res.error) {
                         setMessages(res.data);
-                        console.log(res);
                     } else {
                         console.error(res.message);
                     }
@@ -53,6 +64,23 @@ const Conversations = () => {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
+
+
+
+    const handleLikeMessage = async (messageId) => {
+        try {
+          const res =  await http.postAuth('/like-message', { messageId, username: currentUser.username, recipient: selectedUser, sender: currentUser }, token);
+            console.log(res)
+            if (!res.error) {
+
+                const messages = res.data
+
+                socket.emit('likeMessage', messages)
+            }
+        } catch (error) {
+            console.error("Failed to like message:", error);
+        }
+    };
 
     async function sendMessage() {
         const timestamp = Math.floor(Date.now() / 1000);
@@ -82,10 +110,20 @@ const Conversations = () => {
         };
 
         const res = await http.postAuth("/send-message", data, token);
-        console.log(res);
         if (!res.error) {
+            console.log(res)
             // Emit the message via socket
-            socket.emit('chatMessage', messageRef.current.value);
+            socket.emit('chatMessage', {
+                sender: currentUser.username,
+                recipient: selectedUser.username,
+                message: messageRef.current.value,
+                timestamp: formattedTimestamp,
+                senderImage: currentUser.image,
+                recipientImage: selectedUser.image,
+                _id: res.data._id
+
+            });
+
             messageRef.current.value = '';
         } else {
             console.log(res.message);
@@ -189,11 +227,11 @@ const Conversations = () => {
                     </div>
                     <div
                         ref={containerRef}
-                        className="flex flex-col max-h-[620px] overflow-auto"
+                        className="flex flex-col min-h-[620px] max-h-[620px] p-3 overflow-auto"
                         onScroll={handleScroll}
                     >
                         {messages?.map((message, i) => (
-                            <SingleMessage key={i} message={message} />
+                            <SingleMessage handleLikeMessage={handleLikeMessage} key={i} message={message} />
                         ))}
                         <div ref={messagesEndRef} /> {/* For scrolling to the bottom */}
                     </div>

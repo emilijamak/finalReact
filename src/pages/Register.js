@@ -1,21 +1,27 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import http from "../plugins/http"
 import {useNavigate} from "react-router-dom";
 import mainStore from "../store/mainStore";
+import {io} from "socket.io-client";
 
 const Register = () => {
 
+    const [socket, setSocket] = useState(null);
     const nav = useNavigate()
     const [errorMessage, setErrorMessage] = useState(null);
     const nameRef = useRef()
     const passRef = useRef()
     const pass2Ref = useRef()
-
-
-
-
     const uppercaseRegex = /[A-Z]/;
     const specialCharRegex = /[!@#$%^&*_+]/;
+
+    useEffect(() => {
+        const newSocket = io('http://localhost:2000');
+        setSocket(newSocket);
+
+
+        return () => newSocket.close();
+    }, []);
 
     async function register() {
 
@@ -36,6 +42,8 @@ const Register = () => {
                 setErrorMessage(res.message || "An error occurred during registration.");
                 console.log(res.message);
             } else if (res) {
+                const users = res.data
+                socket.emit('registeredUsers', users);
                 nav('/login');
             } else {
                 setErrorMessage("Unexpected response from the server.");

@@ -1,8 +1,11 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import mainStore from "../store/mainStore";
 import http from "../plugins/http";
+import { socket } from "../socket"
+import { io } from 'socket.io-client';
 
 const Profile = () => {
+    const [socket, setSocket] = useState(null);
     const {currentUser, setCurrentUser, token} = mainStore();
     const imageRef = useRef();
     const usernameRef = useRef();
@@ -12,6 +15,15 @@ const Profile = () => {
     const [changePassState, setChangePassState] = useState(0)
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(null)
+
+
+    useEffect(() => {
+        const newSocket = io('http://localhost:2000');
+        setSocket(newSocket);
+
+
+        return () => newSocket.close();
+    }, []);
 
     async function changeImage() {
 
@@ -23,6 +35,10 @@ const Profile = () => {
         const res = await http.postAuth("/change-image", data, token)
         if (!res.error) {
             setCurrentUser(res.user)
+            socket.emit('profileUpdated', {
+                userId: currentUser._id,
+                image: res.user.image,
+            });
         }
         console.log(res)
 

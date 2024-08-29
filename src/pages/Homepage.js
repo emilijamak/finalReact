@@ -1,15 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import http from '../plugins/http';
-import {useNavigate} from "react-router-dom";
-import mainStore from "../store/mainStore"; // Assuming http is your Axios instance
+import { useNavigate } from "react-router-dom";
+import mainStore from "../store/mainStore";
 import { io } from 'socket.io-client';
 
 const Homepage = () => {
-    const { currentUser, setCurrentUser } = mainStore()
+    const { currentUser, setCurrentUser } = mainStore();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
+    const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+        const newSocket = io('http://localhost:2000');
+        setSocket(newSocket);
+
+        // Listen for the 'profileUpdated' event
+        newSocket.on('profileUpdated', (data) => {
+            console.log("Profile updated with data: ", data);
+
+            // Find the user by ID and update their image
+            setUsers((prevUsers) =>
+                prevUsers.map((user) =>
+                    user._id === data.userId ? { ...user, image: data.image } : user
+                )
+            );
+        });
+
+        newSocket.on('registeredUsers',( users) => {
+            console.log(users)
+            console.log('profile users updated')
+            setUsers(users)
+        })
+
+        // Clean up the socket connection when the component unmounts
+        return () => newSocket.close();
+    }, []);
 
     // Fetch users when the component mounts
     useEffect(() => {
@@ -32,24 +59,7 @@ const Homepage = () => {
         }
 
         fetchUsers();
-    }, []);
-
-
-    const [socket, setSocket] = useState(null);
-
-    useEffect(() => {
-
-        const newSocket = io('http://localhost:2000'); // Specify the backend URL
-        setSocket(newSocket);
-
-
-        newSocket.on('message', (message) => {
-            console.log(message); // Log the received message
-        });
-
-        return () => newSocket.close();
-    }, []); // Empty dependency array ensures this runs only once when the component mounts
-
+    }, [currentUser]);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -67,7 +77,7 @@ const Homepage = () => {
             <div className="flex gap-3">
                 <div className="bg-white mt-5 p-5 flex w-1/4">
                 </div>
-                <div className="mt-5  flex flex-col gap-4 w-full">
+                <div className="mt-5 flex flex-col gap-4 w-full">
                     {users.map(user => (
                         <div key={user._id} className="bg-white flex rounded shadow-lg gap-3 p-3">
                             <img src={user.image} className={`w-36 h-36 rounded`} alt=""/>
@@ -75,15 +85,13 @@ const Homepage = () => {
                                 <p className="mt-2 text-start text-gray-600 text-xl">{user.username}</p>
                                 <button type="button"
                                         onClick={() => navigate(`/profile/${user.username}`)}
-                                        className="text-white  bg-orange-500 hover:bg-orange-400 focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Message
+                                        className="text-white bg-orange-500 hover:bg-orange-400 focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Message
                                 </button>
                             </div>
                         </div>
-
                     ))}
                 </div>
             </div>
-
         </div>
     );
 };
