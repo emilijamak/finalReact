@@ -15,6 +15,7 @@ const Profile = () => {
     const [changePassState, setChangePassState] = useState(0)
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(null)
+    const [deleteAccState, setDeleteAccState] = useState(0)
 
 
     useEffect(() => {
@@ -57,7 +58,7 @@ const Profile = () => {
         }
         console.log(res)
     }
-    async function checkCurrentPassword() {
+    async function checkCurrentPassword(num) {
 
         const data = {
             password: passRef.current.value,
@@ -67,7 +68,12 @@ const Profile = () => {
         const res = await http.postAuth("/login", data, token)
 
         if (res.success) {
-            setChangePassState(2)
+            if (num === 1) {
+                setChangePassState(2)
+            }
+            if (num === 2) {
+                setDeleteAccState(2)
+            }
             console.log('success')
         } else {
             console.log(res)
@@ -123,6 +129,29 @@ const Profile = () => {
 
     }
 
+    async function deleteAcc() {
+
+        const data = {
+            userID: currentUser._id,
+        };
+
+        const res = await http.postAuth("/delete-account", data, token);
+
+        if (!res.error) {
+
+            const users = res.data
+
+            socket.emit('deletedAcc', users);
+            // Perform actions after account deletion
+            setCurrentUser(null); // Clear current user data from the frontend
+            // Optionally redirect the user to the homepage or login page
+            window.location.href = "/";
+        } else {
+            console.log(res.message);
+        }
+
+    }
+
 
 
 
@@ -146,94 +175,151 @@ const Profile = () => {
                     <p className="text-gray-400 font-semibold text-lg">
                         Edit profile
                     </p>
-                    <div className="mt-10  flex flex-col gap-1">
-                        <label htmlFor="image"
-                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile
-                            picture</label>
-                        <div className="flex gap-3">
-                            <div className="flex gap-3">
-                                <input type="text" id="image"
-                                       ref={imageRef}
-                                       className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                       defaultValue={currentUser?.image} required/>
+                    <div className="flex flex-col justify-between h-full">
+                        <div className="">
+                            <div className="mt-10  flex flex-col gap-1">
+                                <label htmlFor="image"
+                                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile
+                                    picture</label>
+                                <div className="flex gap-3">
+                                    <div className="flex gap-3">
+                                        <input type="text" id="image"
+                                               ref={imageRef}
+                                               className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                               defaultValue={currentUser?.image} required/>
+                                    </div>
+                                    <button
+                                        onClick={changeImage}
+                                        className="flex w-[200px] justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
+                                    </button>
+                                </div>
                             </div>
-                            <button
-                                onClick={changeImage}
-                                className="flex w-[200px] justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
-                            </button>
-                        </div>
-                    </div>
-                    <div className="mt-10 flex flex-col gap-2">
-                        <label htmlFor="username"
-                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
-                        <div className="flex gap-3">
-                            <input type="text" id="username"
-                                   ref={usernameRef}
-                                   className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                   defaultValue={currentUser?.username} required/>
-                            <button
-                                onClick={changeUsername}
-                                className="flex w-[200px] justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
-                            </button>
-                        </div>
+                            <div className="mt-10 flex flex-col gap-2">
+                                <label htmlFor="username"
+                                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                                <div className="flex gap-3">
+                                    <input type="text" id="username"
+                                           ref={usernameRef}
+                                           className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                           defaultValue={currentUser?.username} required/>
+                                    <button
+                                        onClick={changeUsername}
+                                        className="flex w-[200px] justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
+                                    </button>
+                                </div>
 
+                            </div>
+                            {changePassState === 0 && (
+                                <div className="mt-10">
+                                    <button
+                                        onClick={() => setChangePassState(1)}
+                                        className="flex w-[300px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    >
+                                        Change password
+                                    </button>
+                                </div>
+                            )}
+                            {changePassState === 1 && (
+                                <div className="mt-10 flex flex-col gap-3">
+                                    <label htmlFor="password"
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter
+                                        your current password</label>
+                                    <input type="password" id="password"
+                                           ref={passRef}
+                                           className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                           placeholder={`password`} required/>
+                                    <button
+                                        onClick={() => checkCurrentPassword(1)}
+                                        className="flex w-[300px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    >
+                                        Enter
+                                    </button>
+                                </div>
+                            )}
+                            {changePassState === 2 && (
+                                <div className="mt-10 flex flex-col gap-3">
+                                    <label htmlFor="password2"
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter
+                                        new password</label>
+                                    <input type="password" id="password2"
+                                           ref={newPassRef}
+                                           className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                           placeholder={`password`} required/>
+                                    <input type="password" id="password"
+                                           ref={newPass2Ref}
+                                           className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                           placeholder={`repeat password`} required/>
+                                    {error && error}
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={changePassword}
+                                            className="flex w-[150px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        >
+                                            Change
+                                        </button>
+                                        <button
+                                            onClick={() => setChangePassState(0)}
+                                            className="flex w-[150px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    {changePassState === 0 && (
+
+
+                    {deleteAccState=== 0 && (
                         <div className="mt-10">
                             <button
-                                onClick={() => setChangePassState(1)}
-                                className="flex w-[300px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                onClick={() => setDeleteAccState(1)}
+                                className="text-white w-[250px] bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                             >
-                                Change password
+                               Delete account
                             </button>
                         </div>
                     )}
-                    {changePassState === 1 && (
+                    {deleteAccState === 1 && (
                         <div className="mt-10 flex flex-col gap-3">
                             <label htmlFor="password"
-                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter your current password</label>
+                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter
+                                your current password</label>
                             <input type="password" id="password"
                                    ref={passRef}
                                    className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                    placeholder={`password`} required/>
                             <button
-                                onClick={checkCurrentPassword}
+                                onClick={() => checkCurrentPassword(2)}
                                 className="flex w-[300px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Enter
                             </button>
                         </div>
                     )}
-                    {changePassState === 2 && (
-                        <div className="mt-10 flex flex-col gap-3">
-                            <label htmlFor="password2"
-                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter new password</label>
-                            <input type="password" id="password2"
-                                   ref={newPassRef}
-                                   className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                   placeholder={`password`} required/>
-                            <input type="password" id="password"
-                                   ref={newPass2Ref}
-                                   className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                   placeholder={`repeat password`} required/>
-                            {error && error}
+                    {deleteAccState === 2 && (
+
+                        <div className="flex flex-col gap-3 text-gray-800">
+                            <p>Are you sure u want to delete your account?</p>
                             <div className="flex gap-3">
                                 <button
-                                    onClick={changePassword}
-                                    className="flex w-[150px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={() => setDeleteAccState(0)}
+                                    className="text-white w-[250px] bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                                 >
-                                    Change
+                                    Go back
                                 </button>
                                 <button
-                                    onClick={() => setChangePassState(0)}
-                                    className="flex w-[150px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    onClick={deleteAcc}
+                                    className="text-white w-[250px] bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                                 >
-                                    Cancel
+                                    Delete account
                                 </button>
                             </div>
 
                         </div>
                     )}
+
 
                 </div>
 

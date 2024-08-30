@@ -8,12 +8,13 @@ import Toolbar from "./components/Toolbar";
 import Profile from "./pages/Profile";
 import SingleUserPage from "./pages/SingleUserPage";
 import Conversations from "./pages/Conversations";
+import AllConversations from "./pages/AllConversations";
 
 
 
 function App() {
   return (
-    <div className="App">
+    <div className="App h-screen">
         <BrowserRouter>
             <Toolbar/>
             <Routes>
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/profile/:username" element={<SingleUserPage/>}/>
                 <Route path="/allChats" element={<Conversations/>}/>
+                <Route path="/allConversations" element={<AllConversations/>}/>
             </Routes>
         </BrowserRouter>
     </div>

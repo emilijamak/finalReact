@@ -33,6 +33,11 @@ const Homepage = () => {
             console.log('profile users updated')
             setUsers(users)
         })
+        newSocket.on('deletedAcc',( users) => {
+            console.log(users)
+            console.log('profile users updated')
+            setUsers(users)
+        })
 
         // Clean up the socket connection when the component unmounts
         return () => newSocket.close();
