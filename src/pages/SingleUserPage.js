@@ -60,10 +60,6 @@ const SingleUserPage = () => {
         setSocket(newSocket);
 
 
-        newSocket.on('message', (message) => {
-            console.log(message); // Log the received message
-        });
-
         return () => newSocket.close();
     }, []); // Empty dependency array ensures this runs only once when the component mounts
 
@@ -108,7 +104,16 @@ const SingleUserPage = () => {
         if (!res.error) {
             setSuccessMessage(res.message)
             //get message text
-            socket.emit('chatMessage', messageRef.current.value)
+            socket.emit('chatMessage', {
+                sender: currentUser.username,
+                recipient: user.username,
+                message: messageRef.current.value,
+                timestamp: formattedTimestamp,
+                senderImage: currentUser.image,
+                recipientImage: user.image,
+                _id: res.data._id
+
+            })
             messageRef.current.value = ''
 
         } else {

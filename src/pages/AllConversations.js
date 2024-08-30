@@ -5,9 +5,11 @@ import {io} from "socket.io-client";
 import SingleConversationComp from "../components/SingleConversationComp";
 
 const AllConversations = () => {
-    const {currentUser} = mainStore(); // Use the store hook inside the component
+    const {currentUser, setConNum} = mainStore(); // Use the store hook inside the component
     const [socket, setSocket] = useState(null);
     const [conversations, setConversations] = useState([]);
+    const [deleteId, setDeleteId] = useState(null)
+
 
 
     useEffect(() => {
@@ -18,7 +20,7 @@ const AllConversations = () => {
             try {
                 const res = await http.get(`/conversations/${currentUser._id}`);
                 if (!res.error) {
-                    console.log(res)
+                   setConNum(res.data.length)
 
                     setConversations(res.data || []); // Update conversations state
                 } else {
@@ -35,6 +37,10 @@ const AllConversations = () => {
 
         // Setup socket event listener
         newSocket.on('messageReceived', () => {
+            // Logic to update the conversation list when a new message is received
+            fetchUserConversations();
+        });
+        newSocket.on('conversationDeleted', () => {
             // Logic to update the conversation list when a new message is received
             fetchUserConversations();
         });
@@ -60,8 +66,8 @@ const AllConversations = () => {
                     Your Conversations:
                 </div>
                 <div className="flex flex-wrap gap-[50px]">
-                    {conversations.map((conversation) => (
-                        <SingleConversationComp  conversation={conversation}/>
+                    {conversations.map((conversation, i) => (
+                        <SingleConversationComp key={conversation._id}  conversation={conversation}/>
                     ))}
                 </div>
             </div>

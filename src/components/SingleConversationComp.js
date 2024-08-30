@@ -5,7 +5,7 @@ import {io} from "socket.io-client";
 
 const SingleConversationComp = ({conversation}) => {
 
-    const { token } = mainStore()
+    const { token, currentUser } = mainStore()
 
 
     const [socket, setSocket] = useState(null);
@@ -18,7 +18,6 @@ const SingleConversationComp = ({conversation}) => {
         return () => newSocket.close();
     }, []);
 
-    const { currentUser } = mainStore()
 
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -35,20 +34,24 @@ const SingleConversationComp = ({conversation}) => {
 
     const deleteConversation = async () => {
 
-        const conversationId = conversation._id
+
+        const data = {
+            conversationId: conversation._id,
+            userId: currentUser._id
+        }
+        console.log(currentUser._id)
 
         try {
-            const res = await http.postAuth(`/deleteConversation/${conversationId}`, token);
-            console.log(res)
-            // console.log(res)
-            // if (!res.error) {
-            //     console.log(res)
-            //     console.log("Conversation deleted successfully");
-            //     // socket.emit('deletedConv', conversation);
-            //
-            // } else {
-            //     console.error(res.message);
-            // }
+            const res = await http.postAuth(`/deleteConversation/${conversation._id}`, data, token); // No need to send the conversation ID in the body, it's already in the URL
+            if (!res.error) {
+                console.log(res.data)
+                const conversations = res.data
+
+                socket.emit('deleteConversation', conversations);
+                socket.emit('conversationNumber', conversations);
+            } else {
+                console.error(res.message);
+            }
         } catch (error) {
             console.error("Error deleting conversation:", error);
         }
@@ -68,13 +71,13 @@ const SingleConversationComp = ({conversation}) => {
 
             <div className="flex gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                     stroke="currentColor" className="size-16 h-[120px] w-[120px]  border rounded-full p-3">
+                     stroke="currentColor" className="size-16 h-[120px] w-[120px] text-gray-800 rounded-full p-3">
                     <path strokeLinecap="round" strokeLinejoin="round"
                           d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>
                 </svg>
             </div>
             <div className="flex flex-col gap-1 ms-4 justify-center text-start">
-                <div className="text-gray-600 text-xl">
+                <div className="text-gray-600 hover:text-gray-500 cursor-pointer text-xl">
                     <p className="font-semibold">Conversation with:</p>
                     <div className="flex gap-1 text-sm">
                         <div className="flex gap-1 text-lg">
