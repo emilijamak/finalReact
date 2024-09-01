@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import SingleUserPage from "./pages/SingleUserPage";
 import Conversations from "./pages/Conversations";
 import AllConversations from "./pages/AllConversations";
+import SingleConversation from "./pages/SingleConversation";
 
 
 
@@ -23,8 +24,9 @@ function App() {
                 <Route path="/register" element={<Register/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/profile/:username" element={<SingleUserPage/>}/>
-                <Route path="/allChats" element={<Conversations/>}/>
+                {/*<Route path="/allChats" element={<Conversations/>}/>*/}
                 <Route path="/allConversations" element={<AllConversations/>}/>
+                <Route path="/conversation/:conversationId" element={<Conversations/>}/>
             </Routes>
         </BrowserRouter>
     </div>

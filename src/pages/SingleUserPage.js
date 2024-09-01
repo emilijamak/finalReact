@@ -95,7 +95,10 @@ const SingleUserPage = () => {
             sender: currentUser.username,
             recipient: user.username,
             message: messageRef.current.value,
-            timestamp: formattedTimestamp
+            timestamp: formattedTimestamp,
+            senderImage: currentUser.image,
+            recipientImage: user.image
+
         };
 
 

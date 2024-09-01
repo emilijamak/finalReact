@@ -2,11 +2,12 @@ import React, {useEffect, useState} from 'react';
 import mainStore from "../store/mainStore";
 import http from "../plugins/http";
 import {io} from "socket.io-client";
+import {useNavigate} from "react-router-dom";
 
 const SingleConversationComp = ({conversation}) => {
 
     const { token, currentUser } = mainStore()
-
+    const nav = useNavigate()
 
     const [socket, setSocket] = useState(null);
 
@@ -57,6 +58,9 @@ const SingleConversationComp = ({conversation}) => {
         }
     };
 
+
+
+
     ///////delete conversation doesnt work
 
     return (
@@ -77,7 +81,7 @@ const SingleConversationComp = ({conversation}) => {
                 </svg>
             </div>
             <div className="flex flex-col gap-1 ms-4 justify-center text-start">
-                <div className="text-gray-600 hover:text-gray-500 cursor-pointer text-xl">
+                <div onClick={() => nav(`/conversation/${conversation._id}`)}  className="text-gray-600 hover:text-gray-500 cursor-pointer text-xl">
                     <p className="font-semibold">Conversation with:</p>
                     <div className="flex gap-1 text-sm">
                         <div className="flex gap-1 text-lg">

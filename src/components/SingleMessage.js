@@ -1,12 +1,14 @@
 import React from 'react';
 import mainStore from "../store/mainStore";
 
-const SingleMessage = ({ message, handleLikeMessage }) => {
+const SingleMessage = ({ message, handleLikeMessage, participants }) => {
     const { currentUser } = mainStore();
     const isCurrentUser = currentUser.username === message.sender;
 
     // Safely check if the liked array exists, otherwise use an empty array
     const likedCount = message.liked?.length || 0;
+
+
 
     return (
         <div>

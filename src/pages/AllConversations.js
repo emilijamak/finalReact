@@ -21,6 +21,7 @@ const AllConversations = () => {
                 const res = await http.get(`/conversations/${currentUser._id}`);
                 if (!res.error) {
                    setConNum(res.data.length)
+                    console.log(res)
 
                     setConversations(res.data || []); // Update conversations state
                 } else {
