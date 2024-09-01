@@ -6,7 +6,7 @@ import SingleMessage from "../components/SingleMessage";
 import {useParams} from "react-router-dom";
 
 const Conversations = () => {
-    const { conversationId } = useParams();
+
     const [socket, setSocket] = useState(null);
     const [users, setUsers] = useState(null);
     const [participants, setParticipants] = useState(null)
@@ -21,12 +21,13 @@ const Conversations = () => {
     const messagesEndRef = useRef();
 
 
+
     useEffect(() => {
         const newSocket = io('http://localhost:2000');
         setSocket(newSocket);
 
         newSocket.on('connect', () => {
-            console.log('Socket connected');
+            console.log(`${currentUser.username} has joined the chat`);
         });
 
         newSocket.on('message', (message) => {
@@ -36,35 +37,15 @@ const Conversations = () => {
         });
 
         newSocket.on('likeMessage', (messages) => {
-            console.log(messages)
-            setMessages(messages)
+            fetchPublicRoomMessages()
 
+        });
+        newSocket.on('disconnect', () => {
+            console.log(`${currentUser.username} has left the chat`)
         });
 
         return () => newSocket.close();
     }, []);
-
-
-
-    useEffect(() => {
-        const fetchConversation = async () => {
-            try {
-                const res = await http.get(`/conversation/${conversationId}`);
-                if (!res.error) {
-                    setMessages(res.data.messages)
-                    const filteredUser = res.data.participants.find(user => user.username !== currentUser.username);
-                    setSelectedUser(filteredUser);
-                } else {
-                    setError(res.message);
-                }
-            } catch (err) {
-                setError("Failed to fetch conversation");
-            }
-        };
-
-        fetchConversation();
-    }, [conversationId, currentUser.username]); // Add dependencies here
-
 
 
     useEffect(() => {
@@ -78,10 +59,10 @@ const Conversations = () => {
 
     const handleLikeMessage = async (messageId) => {
         try {
-          const res =  await http.postAuth('/like-message', { messageId, username: currentUser.username, recipient: selectedUser, sender: currentUser }, token);
+            const res =  await http.postAuth('/like-message', { messageId, username: currentUser.username, recipient: selectedUser, sender: currentUser }, token);
 
             if (!res.error) {
-
+                console.log(res)
                 const messages = res.data
 
                 socket.emit('likeMessage', messages)
@@ -90,14 +71,27 @@ const Conversations = () => {
             console.error("Failed to like message:", error);
         }
     };
-
-    async function sendMessage() {
-        if (!selectedUser) {
-            console.error("Selected user is not defined.");
-            return;
+    const fetchPublicRoomMessages = async () => {
+        try {
+            const res = await http.get('/get-public-room-messages');
+            if (!res.error) {
+                setMessages(res.data);
+            } else {
+                console.error("Failed to fetch public room messages:", res.message);
+            }
+        } catch (error) {
+            console.error("Error fetching public room messages:", error);
         }
+    };
 
+    useEffect(() => {
+        fetchPublicRoomMessages();
+    }, []);
+
+
+    const sendMessage = async () => {
         const timestamp = Math.floor(Date.now() / 1000);
+
         if (messageRef.current.value.length < 1 || messageRef.current.value.length > 200) {
             return setError('Message should be longer than 1 symbol and shorter than 200.');
         }
@@ -117,23 +111,18 @@ const Conversations = () => {
 
         const data = {
             sender: currentUser.username,
-            recipient: selectedUser.username,
+            recipient: selectedUser ? selectedUser.username : 'public-room',
             message: messageRef.current.value,
             timestamp: formattedTimestamp,
             senderImage: currentUser.image,
-            recipientImage: selectedUser.image,
+            recipientImage: selectedUser ? selectedUser.image : 'public-room'
         };
 
-
         const res = await http.postAuth("/send-message", data, token);
+
         if (!res.error) {
             socket.emit('chatMessage', {
-                sender: currentUser.username,
-                recipient: selectedUser.username,
-                message: messageRef.current.value,
-                timestamp: formattedTimestamp,
-                senderImage: currentUser.image,
-                recipientImage: selectedUser.image,
+                ...data,
                 _id: res.data._id
             });
 
@@ -141,7 +130,10 @@ const Conversations = () => {
         } else {
             console.log(res.message);
         }
-    }
+    };
+
+
+
 
 
 
@@ -173,9 +165,8 @@ const Conversations = () => {
             <div className="flex ">
                 <div className="flex flex-col w-full bg-white rounded-3xl">
                     <div className="flex items-center gap-3 bg-gray-100 p-2 rounded-xl">
-                        <img className='w-14 h-14 rounded-full' src={selectedUser?.image} alt="" />
                         <div className="flex flex-col">
-                            <p>Chat with {selectedUser?.username}</p>
+                            <p>Chat Room</p>
                         </div>
                     </div>
                     <div
