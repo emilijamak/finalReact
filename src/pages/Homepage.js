@@ -3,6 +3,8 @@ import http from '../plugins/http';
 import { useNavigate } from "react-router-dom";
 import mainStore from "../store/mainStore";
 import { io } from 'socket.io-client';
+import SingleUserPage from "./SingleUserPage";
+import SingleUserCard from "../components/SingleUserCard";
 
 const Homepage = () => {
     const { currentUser, setCurrentUser } = mainStore();
@@ -28,16 +30,16 @@ const Homepage = () => {
             );
         });
 
-        newSocket.on('registeredUsers',( users) => {
-            console.log(users)
-            console.log('profile users updated')
-            setUsers(users)
-        })
-        newSocket.on('deletedAcc',( users) => {
-            console.log(users)
-            console.log('profile users updated')
-            setUsers(users)
-        })
+        newSocket.on('registeredUsers', (users) => {
+            console.log(users);
+            console.log('profile users updated');
+            setUsers(users);
+        });
+        newSocket.on('deletedAcc', (users) => {
+            console.log(users);
+            console.log('profile users updated');
+            setUsers(users);
+        });
 
         // Clean up the socket connection when the component unmounts
         return () => newSocket.close();
@@ -49,11 +51,16 @@ const Homepage = () => {
             try {
                 const res = await http.get('/get-all-users');
                 if (!res.error) {
-                    const otherUsers = res.data.filter(
-                        (user) => user.username !== currentUser.username
-                    );
+                    let otherUsers = res.data;
+                    if (currentUser) {
+                        // Filter out the current user if they are logged in
+                        otherUsers = res.data.filter(
+                            (user) => user.username !== currentUser.username
+                        );
+                    }
                     setUsers(otherUsers);
                 } else {
+                    console.log(res);
                     setError(res.message);
                 }
             } catch (err) {
@@ -64,7 +71,7 @@ const Homepage = () => {
         }
 
         fetchUsers();
-    }, [currentUser]);
+    }, [currentUser]);  // You can remove `currentUser` from here if not needed
 
     if (loading) {
         return <div>Loading...</div>;
@@ -75,27 +82,22 @@ const Homepage = () => {
     }
 
     return (
-        <div className={`container mx-auto`}>
-            <div className="bg-white mt-5 p-5 flex">
-                <p className="font-semibold text-gray-600 text-2xl">Users</p>
-            </div>
-            <div className="flex gap-3">
-                <div className="bg-white mt-5 p-5 flex w-1/4">
-                </div>
-                <div className="mt-5 flex flex-col gap-4 w-full">
-                    {users.map(user => (
-                        <div key={user._id} className="bg-white flex rounded shadow-lg gap-3 p-3">
-                            <img src={user.image} className={`w-36 h-36 rounded`} alt=""/>
-                            <div className="flex flex-col gap-3">
-                                <p className="mt-2 text-start text-gray-600 text-xl">{user.username}</p>
-                                <button type="button"
-                                        onClick={() => navigate(`/profile/${user.username}`)}
-                                        className="text-white bg-orange-500 hover:bg-orange-400 focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Message
-                                </button>
+        <div className={` flex flex-col gap-3 relative`}>
+            <div className="flex bg-gradient-to-r from-indigo-500 to-violet-400 h-[500px]"></div>
+            <div className="flex flex-col w-full absolute top-[70px]">
+                <div className="flex flex-col lg:mx-[100px] mx-[20px] bg-white p-6 rounded-2xl">
+                    <div className="bg-white mt-5 p-5 flex shadow-2xl">
+                        <p className="font-semibold text-gray-600 rounded-2xl text-2xl">Users</p>
+                    </div>
+                    <div className="mt-5 flex flex-wrap gap-[50px] w-full">
+                        {users.map(user => (
+                            <div className={`xl:w-[500px] w-full`}>
+                                <SingleUserCard user={user}/>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
+
             </div>
         </div>
     );

@@ -26,15 +26,14 @@ const Conversations = () => {
         const newSocket = io('http://localhost:2000');
         setSocket(newSocket);
 
-        newSocket.on('connect', () => {
-            console.log(`${currentUser.username} has joined the chat`);
-        });
 
-        newSocket.on('message', (message) => {
+
+        newSocket.on('privateMessage', (message) => {
             console.log(message)
             setMessages((prevMessages) => (prevMessages ? [...prevMessages, message] : [message]));
 
         });
+
 
         newSocket.on('likeMessage', (messages) => {
             fetchPublicRoomMessages()
@@ -121,7 +120,7 @@ const Conversations = () => {
         const res = await http.postAuth("/send-message", data, token);
 
         if (!res.error) {
-            socket.emit('chatMessage', {
+            socket.emit('privateChatMessage', {
                 ...data,
                 _id: res.data._id
             });
@@ -131,11 +130,6 @@ const Conversations = () => {
             console.log(res.message);
         }
     };
-
-
-
-
-
 
     const handleScroll = () => {
         if (containerRef.current) {
@@ -161,12 +155,12 @@ const Conversations = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-gradient-to-br from-pink-500 to-orange-400 p-16">
+        <div className="flex flex-col bg-gradient-to-r from-indigo-500 to-violet-400 p-16">
             <div className="flex ">
-                <div className="flex flex-col w-full bg-white rounded-3xl">
-                    <div className="flex items-center gap-3 bg-gray-100 p-2 rounded-xl">
+                <div className="flex flex-col w-full bg-white rounded-xl overflow-hidden">
+                    <div className="flex items-center gap-3 bg-gray-100 p-4 ">
                         <div className="flex flex-col">
-                            <p>Chat Room</p>
+                            <p className={`text-gray-500 font-semibold`}>Chat Room</p>
                         </div>
                     </div>
                     <div

@@ -60,17 +60,22 @@ const AllConversations = () => {
 
 
     return (
-        <div className="flex flex-col  w-full h-full relative ">
-            <div className="flex bg-gradient-to-br from-pink-500 to-orange-400 p-3 h-1/3"></div>
-            <div className="flex flex-col absolute top-[100px] mx-[100px]">
-                <div className="flex p-5 rounded bg-white shadow-2xl w-full mb-12 font-semibold text-xl">
-                    Your Conversations:
+        <div className="flex flex-col w-full h-full relative ">
+            <div className="flex bg-gradient-to-r from-indigo-500 to-violet-400  h-1/3"></div>
+            <div className="flex absolute top-[100px] xl:px-[100px] px-[20px] w-full ">
+                <div className="flex-col flex bg-white p-4 w-full rounded-2xl min-h-[650px]">
+                    <div className="flex p-5  bg-white shadow-2xl w-full mb-12 font-semibold text-xl">
+                        Your Conversations:
+                    </div>
+                    <div className="flex flex-wrap gap-[50px]">
+                        {conversations.map((conversation, i) => (
+                            <div className={`xl:w-[450px] w-full`}>
+                                <SingleConversationComp key={conversation._id} conversation={conversation}/>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="flex flex-wrap gap-[50px]">
-                    {conversations.map((conversation, i) => (
-                        <SingleConversationComp key={conversation._id}  conversation={conversation}/>
-                    ))}
-                </div>
+
             </div>
 
 

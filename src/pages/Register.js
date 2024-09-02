@@ -100,7 +100,7 @@ const Register = () => {
 
 
     return (
-        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="flex mt-[100px] flex-col justify-centerlg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Create an
                     account</h2>
@@ -151,7 +151,7 @@ const Register = () => {
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Already a member?
-                    <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"> Login</a>
+                    <a onClick={() => nav('/login')} className="font-semibold cursor-pointer leading-6 text-indigo-600 hover:text-indigo-500"> Login</a>
                 </p>
             </div>
         </div>

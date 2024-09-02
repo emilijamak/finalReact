@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'; // Import useParams to get the use
 import http from '../plugins/http';
 import mainStore from "../store/mainStore";
 import { io } from 'socket.io-client';
+import ErrorComp from "../components/ErrorComp";
+import SuccessComp from "../components/SuccessComp";
 
 const SingleUserPage = () => {
 
@@ -75,7 +77,12 @@ const SingleUserPage = () => {
         const timestamp = Math.floor(Date.now() / 1000);
 
         if (messageRef.current.value.length < 1 || messageRef.current.value.length > 200) {
-           return setError('Message should be longer then 1 symbol and shorter then 200.')
+           setError('Message should be longer then 1 symbol and shorter then 200.')
+            setTimeout(() => {
+                setError(null);
+            }, 3000);
+
+           return;
         }
 
         const convertTimestamp = (timestamp) => {
@@ -106,6 +113,10 @@ const SingleUserPage = () => {
         console.log(res)
         if (!res.error) {
             setSuccessMessage(res.message)
+
+            setTimeout(() => {
+                setSuccessMessage(null);
+            }, 3000);
             //get message text
             socket.emit('chatMessage', {
                 sender: currentUser.username,
@@ -120,7 +131,7 @@ const SingleUserPage = () => {
             messageRef.current.value = ''
 
         } else {
-            console.log(res.message)
+            setError(res.message)
         }
     }
 
@@ -128,7 +139,7 @@ const SingleUserPage = () => {
 
     return (
         <div className="h-screen relative">
-            <div className=" bg-gradient-to-br from-pink-500 to-orange-400 p-3 h-1/3"></div>
+            <div className="bg-gradient-to-r from-indigo-500 to-violet-400 p-3 h-1/3"></div>
             <div
                 className="bg-white w-[600px] p-5 mx-auto container rounded-3xl absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div className="flex h-full w-full relative flex-col">
@@ -150,10 +161,10 @@ const SingleUserPage = () => {
 
                         <button type="button"
                                 onClick={sendMessage}
-                                className="text-white  bg-orange-500 hover:bg-orange-400 focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Send a message
+                                className="text-white  bg-indigo-600 hover:bg-indigo-500  focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Send a message
                         </button>
-                        {error && error}
-                        {successMessage && successMessage}
+                        {error && <ErrorComp error={error}/>}
+                        {successMessage && <SuccessComp msg={successMessage}/>}
                     </div>
 
                 </div>

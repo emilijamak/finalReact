@@ -16,7 +16,7 @@ import ChatPage from "./pages/ChatPage";
 
 function App() {
   return (
-    <div className="App h-screen">
+    <div className="App h-screen bg-gradient-to-br">
         <BrowserRouter>
             <Toolbar/>
             <Routes>
