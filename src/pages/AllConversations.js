@@ -3,12 +3,14 @@ import http from "../plugins/http";
 import mainStore from "../store/mainStore";
 import {io} from "socket.io-client";
 import SingleConversationComp from "../components/SingleConversationComp";
+import {useNavigate} from "react-router-dom";
 
 const AllConversations = () => {
     const {currentUser, setConNum} = mainStore(); // Use the store hook inside the component
     const [socket, setSocket] = useState(null);
     const [conversations, setConversations] = useState([]);
     const [deleteId, setDeleteId] = useState(null)
+    const nav = useNavigate()
 
 
 
@@ -63,10 +65,12 @@ const AllConversations = () => {
         <div className="flex flex-col w-full h-full relative ">
             <div className="flex bg-gradient-to-r from-indigo-500 to-violet-400  h-1/3"></div>
             <div className="flex absolute top-[100px] xl:px-[100px] px-[20px] w-full ">
+
                 <div className="flex-col flex bg-white p-4 w-full rounded-2xl min-h-[650px]">
                     <div className="flex p-5  bg-white shadow-2xl w-full mb-12 font-semibold text-xl">
                         Your Conversations:
                     </div>
+                    {currentUser &&
                     <div className="flex flex-wrap gap-[50px]">
                         {conversations.map((conversation, i) => (
                             <div className={`xl:w-[450px] w-full`}>
@@ -74,6 +78,14 @@ const AllConversations = () => {
                             </div>
                         ))}
                     </div>
+                    }
+                    {
+                        !currentUser &&
+                        <button type="button"
+                                onClick={() => nav(`/login`)}
+                                className="text-white bg-indigo-600 hover:bg-indigo-500 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Log In to see your conversations
+                        </button>
+                    }
                 </div>
 
             </div>

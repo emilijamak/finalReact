@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams to get the username from the URL
+import {useNavigate, useParams} from 'react-router-dom'; // Import useParams to get the username from the URL
 import http from '../plugins/http';
 import mainStore from "../store/mainStore";
 import { io } from 'socket.io-client';
@@ -15,6 +15,7 @@ const SingleUserPage = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null)
     const messageRef = useRef()
+    const nav = useNavigate()
 
 
 
@@ -150,6 +151,7 @@ const SingleUserPage = () => {
                         style={{top: '-50px'}}  // Adjust the value to fine-tune the positioning
                     />
                     <p className="pt-[180px] text-3xl font-semibold text-gray-600">{user.username}</p>
+                    {currentUser &&
                     <div className="mt-10 flex flex-col gap-3">
                         <label htmlFor="message"
                                className="block mb-2 text-sm text-start font-medium text-gray-900 dark:text-white">Your
@@ -166,7 +168,14 @@ const SingleUserPage = () => {
                         {error && <ErrorComp error={error}/>}
                         {successMessage && <SuccessComp msg={successMessage}/>}
                     </div>
-
+                    }
+                    {
+                        !currentUser &&
+                        <button type="button"
+                                onClick={() => nav('/login')}
+                                className="text-white mt-5 bg-indigo-600 hover:bg-indigo-500  focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Login to send a message
+                        </button>
+                    }
                 </div>
             </div>
         </div>

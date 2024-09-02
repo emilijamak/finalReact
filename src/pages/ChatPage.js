@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import http from "../plugins/http";
 import mainStore from "../store/mainStore";
 import SingleMessage from "../components/SingleMessage";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const Conversations = () => {
 
@@ -19,6 +19,7 @@ const Conversations = () => {
     const messageRef = useRef();
     const containerRef = useRef();
     const messagesEndRef = useRef();
+    const nav = useNavigate()
 
 
 
@@ -40,7 +41,7 @@ const Conversations = () => {
 
         });
         newSocket.on('disconnect', () => {
-            console.log(`${currentUser.username} has left the chat`)
+            console.log(`${currentUser?.username} has left the chat`)
         });
 
         return () => newSocket.close();
@@ -163,42 +164,61 @@ const Conversations = () => {
                             <p className={`text-gray-500 font-semibold`}>Chat Room</p>
                         </div>
                     </div>
-                    <div
-                        ref={containerRef}
-                        className="flex flex-col min-h-[620px] max-h-[620px] p-3 overflow-auto"
-                        onScroll={handleScroll}
-                    >
-                        {messages?.map((message, i) => (
-                            <SingleMessage handleLikeMessage={handleLikeMessage} participants={participants}  key={i} message={message} />
-                        ))}
-                        <div ref={messagesEndRef} /> {/* For scrolling to the bottom */}
-                    </div>
-                    {showButton && (
-                        <button
-                            onClick={handleLoadEarlier}
-                            className="absolute hidden bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-2 rounded"
-                        >
-                        </button>
-                    )}
-                    <div className="flex p-3 bg-gray-100 rounded-xl">
-                        <div className="w-full flex gap-2 items-center text-gray-500">
-                            <input
-                                ref={messageRef}
-                                type="text"
-                                id="default-input"
-                                placeholder={`Type your message`}
-                                className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            />
-                            <svg
-                                onClick={sendMessage}
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                                stroke="currentColor" className="size-6 cursor-pointer hover:text-gray-800"
+                    {
+                        currentUser &&
+                        <div>
+                            <div
+                                ref={containerRef}
+                                className="flex flex-col min-h-[620px] max-h-[620px] p-3 overflow-auto"
+                                onScroll={handleScroll}
                             >
-                                <path strokeLinecap="round" strokeLinejoin="round"
-                                      d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/>
-                            </svg>
+                                {messages?.map((message, i) => (
+                                    <SingleMessage handleLikeMessage={handleLikeMessage} participants={participants}
+                                                   key={i} message={message}/>
+                                ))}
+                                <div ref={messagesEndRef}/>
+                                {/* For scrolling to the bottom */}
+                            </div>
+                            {showButton && (
+                                <button
+                                    onClick={handleLoadEarlier}
+                                    className="absolute hidden bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-2 rounded"
+                                >
+                                </button>
+                            )}
+                            <div className="flex p-3 bg-gray-100 rounded-xl">
+                                <div className="w-full flex gap-2 items-center text-gray-500">
+                                    <input
+                                        ref={messageRef}
+                                        type="text"
+                                        id="default-input"
+                                        placeholder={`Type your message`}
+                                        className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    />
+                                    <svg
+                                        onClick={sendMessage}
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        stroke="currentColor" className="size-6 cursor-pointer hover:text-gray-800"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                              d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    {!currentUser &&
+                        <div className={`h-[600px] bg-white p-3 w-full flex flex-col justify-end items-center`}>
+                            <p className="font-semibold text-gray-600">Please Log In to send a message</p>
+                            <button type="button"
+                                    onClick={() => nav('/login')}
+                                    className="text-white w-[300px] mt-5 bg-indigo-600 hover:bg-indigo-500  focus:outline-none focus:ring-4 focus:ring-orange-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-orange-900">Login
+
+                            </button>
+                        </div>
+                    }
+
                 </div>
             </div>
         </div>

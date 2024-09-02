@@ -70,7 +70,7 @@ const Toolbar = () => {
                             <Link
                                 to="/login"
                                 onClick={() => handleLinkClick("login")}
-                                className={`block py-2 px-3 text-gray-800 bg-blue-700 rounded md:bg-transparent  md:p-0 dark:text-white md:dark:text-blue-500 ${
+                                className={`block py-2 px-3 text-gray-800  rounded md:bg-transparent  md:p-0 dark:text-white md:dark:text-blue-500 ${
                                     activeLink === "login" ? "text-indigo-700" : ""
                                 }`}
                                 aria-current="page"
