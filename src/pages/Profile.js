@@ -216,7 +216,7 @@ const Profile = () => {
 
 
     return (
-        <div className="container mx-auto  p-5">
+        <div className="lg:container mx-auto  p-5">
             <div className=" mx-[50px] flex gap-4">
                 <div className="flex flex-col w-[500px] shadow-xl">
                     <div className="flex flex-col h-[200px] bg-gradient-to-r from-indigo-500 to-violet-400 w-full rounded"></div>
@@ -244,16 +244,16 @@ const Profile = () => {
                                 <label htmlFor="image"
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile
                                     picture</label>
-                                <div className="flex gap-3">
+                                <div className="lg:flex-row flex flex-col gap-3">
                                     <div className="flex gap-3">
                                         <input type="text" id="image"
                                                ref={imageRef}
-                                               className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                               className="lg:w-[300px] w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                defaultValue={currentUser?.image} required/>
                                     </div>
                                     <button
                                         onClick={changeImage}
-                                        className="flex w-[200px] justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
+                                        className="flex lg:w-[200px] w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
                                     </button>
                                 </div>
                                 {errorMsg && <ErrorComp error={errorMsg}/>}
@@ -262,14 +262,14 @@ const Profile = () => {
                             <div className="mt-10 flex flex-col gap-2">
                                 <label htmlFor="username"
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
-                                <div className="flex gap-3">
+                                <div className="lg:flex-row flex flex-col gap-3">
                                     <input type="text" id="username"
                                            ref={usernameRef}
-                                           className="w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                           className="lg:w-[300px] w-full  bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                            defaultValue={currentUser?.username} required/>
                                     <button
                                         onClick={changeUsername}
-                                        className="flex w-[200px] justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
+                                        className="flex lg:w-[200px] w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
                                     </button>
                                 </div>
                                 {errorMsg2 && <ErrorComp error={errorMsg2}/>}
@@ -279,7 +279,7 @@ const Profile = () => {
                                 <div className="mt-10">
                                     <button
                                         onClick={() => setChangePassState(1)}
-                                        className="flex mb-3 w-[300px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        className="flex mb-3 lg:w-[300px] w-full justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     >
                                         Change password
                                     </button>
@@ -364,7 +364,7 @@ const Profile = () => {
                                        placeholder={`password`} required/>
                                 <button
                                     onClick={() => checkCurrentPassword(2)}
-                                    className="flex w-[300px] justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    className="flex  justify-center rounded-md bg-indigo-600 px-6 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
                                     Enter
                                 </button>
@@ -375,16 +375,16 @@ const Profile = () => {
 
                             <div className="flex flex-col gap-3 text-gray-800">
                                 <p>Are you sure u want to delete your account?</p>
-                                <div className="flex gap-3">
+                                <div className="lg:flex-row flex flex-col gap-3">
                                     <button
                                         onClick={() => setDeleteAccState(0)}
-                                        className="text-white w-[250px] bg-violet-600 hover:bg-violet-500 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        className="text-white lg:w-[250px] w-full bg-violet-600 hover:bg-violet-500 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                                     >
                                         Go back
                                     </button>
                                     <button
                                         onClick={deleteAcc}
-                                        className="text-white w-[250px] bg-indigo-600 hover:bg-indigo-500 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                        className="text-white lg:w-[250px] w-full bg-indigo-600 hover:bg-indigo-500 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                                     >
                                         Delete account
                                     </button>

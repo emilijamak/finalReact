@@ -32,13 +32,21 @@ const Homepage = () => {
 
         newSocket.on('registeredUsers', (users) => {
             console.log(users);
-            console.log('profile users updated');
-            setUsers(users);
+            console.log('Profile users updated');
+
+            // Filter out the currentUser
+            const filteredUsers = users.filter(user => user.username !== currentUser.username);
+            setUsers(filteredUsers);
         });
+
+        // Handle deleted accounts
         newSocket.on('deletedAcc', (users) => {
             console.log(users);
-            console.log('profile users updated');
-            setUsers(users);
+            console.log('Profile users updated');
+
+            // Filter out the currentUser
+            const filteredUsers = users.filter(user => user.username !== currentUser.username);
+            setUsers(filteredUsers);
         });
 
         // Clean up the socket connection when the component unmounts
